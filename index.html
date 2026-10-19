@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Intern Quest Guild</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Itim&family=Press+Start+2P&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prop-types@15.8.1/prop-types.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-is@18.3.1/umd/react-is.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/recharts@2.12.7/umd/Recharts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#fdf6e3;--card:#fff;--ink:#2b2140;--line:#2b2140}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1530;--card:#2a2147;--ink:#f3ecff;--line:#a78bfa}}
+body{background:var(--bg);color:var(--ink);font-family:'Prompt','Noto Sans Thai',system-ui,sans-serif;min-height:100vh}
+.px{background:var(--card);border:3px solid var(--line);border-radius:14px;box-shadow:4px 4px 0 var(--line)}
+.btn{border:3px solid var(--line);border-radius:10px;padding:.35rem .8rem;font-weight:700;box-shadow:2px 2px 0 var(--line);transition:transform .1s}
+.btn:active:not(:disabled){transform:translate(2px,2px);box-shadow:none}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+@keyframes pop{0%{transform:translateY(20px) scale(.5);opacity:0}30%{transform:translateY(0) scale(1.15);opacity:1}100%{transform:translateY(-60px) scale(1);opacity:0}}
+.pop{animation:pop 2.2s ease-out forwards}
+@keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.bounce{animation:bnc .8s infinite}
+:root,:root:not([data-theme="light"]){--bg:#3b2414;--card:#f3e2b8;--ink:#3b2412;--line:#2a170a}
+body{background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.55)),repeating-linear-gradient(90deg,#5a3a1f 0 46px,#4b2f18 46px 48px);background-attachment:fixed;color:#f6e7c1;font-family:'Itim','Noto Sans Thai',system-ui,sans-serif}
+.px{background:linear-gradient(#f6e7c1,#ecd49b);color:#3b2412;border:4px solid #5a3a1e;border-radius:6px;box-shadow:inset 0 0 0 2px #d9a441,4px 4px 0 #1f1008}
+.px.p-8{background:repeating-linear-gradient(0deg,#7a4e28 0 10px,#6b4423 10px 12px);color:#f6e7c1;border-color:#d9a441}
+.btn{border:3px solid #2a170a;border-radius:6px;margin-bottom:3px;font-family:inherit;box-shadow:inset 0 3px 0 rgba(255,255,255,.4),inset 0 -4px 0 rgba(0,0,0,.28),0 3px 0 #2a170a}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.28),0 0 0 #2a170a}
+.ptitle{font-family:'Press Start 2P',monospace}
+.banner{display:inline-block;padding:10px 28px;background:linear-gradient(#4a7fb8,#2f5f94);border:5px solid #d9a441;border-radius:6px;box-shadow:0 0 0 3px #2a170a,6px 6px 0 #1f1008;text-align:center}
+.banner .ptitle{color:#ffd96a;font-size:clamp(14px,4.5vw,28px);text-shadow:3px 3px 0 #2a170a}
+.guild{color:#fff3cf;font-weight:700;margin-top:4px;text-shadow:2px 2px 0 #2a170a}
+.board{background:repeating-linear-gradient(90deg,#8a5a2e 0 38px,#7a4e26 38px 40px);border:8px solid #5a3a1e;border-radius:8px;padding:16px;box-shadow:inset 0 0 0 3px #d9a441,6px 6px 0 #1f1008}
+.plaque{background:linear-gradient(#a8742f,#8a5a2e);color:#fff3cf;border:4px solid #d9a441;font-size:1.4rem;font-weight:700;padding:4px 16px;border-radius:6px;text-shadow:2px 2px 0 #2a170a;box-shadow:4px 4px 0 #1f1008}
+.space-y-1>div{background:#3a2515;color:#f6e7c1;border-color:#d9a441!important;border-radius:4px}
+.portrait{background:radial-gradient(#fff3cf,#ecd49b);border:3px solid #5a3a1e;padding:4px;border-radius:4px}
+.slot{width:30px;height:30px;border:3px solid #5a3a1e;background:#8a6034;box-shadow:inset 2px 2px 0 #6b4423,inset -2px -2px 0 #a97c46;display:flex;align-items:center;justify-content:center;font-size:16px}
+.slot-on{background:#e8c878;border-color:#c99a2e}.slot-red{background:#d6453d;border-color:#7a1410}
+@keyframes glow{from{box-shadow:inset 0 0 0 2px #ff6a3d,0 0 6px #ff3d1f}to{box-shadow:inset 0 0 0 2px #ff6a3d,0 0 22px #ff3d1f}}
+.fullq{border-color:#b3261e;animation:glow .8s infinite alternate}
+@keyframes idle{50%{transform:translateY(-2px)}}.idle{animation:idle 1.2s steps(2) infinite}
+@keyframes flick{to{transform:translateY(-4px) scale(1.2)}}.flame{animation:flick .35s infinite alternate;transform-box:fill-box;transform-origin:center bottom}
+@keyframes beat{50%{transform:scale(1.35)}}.heart{animation:beat .8s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes blk{50%{opacity:.35}}.blink{animation:blk 1s steps(2) infinite}
+@keyframes shk{20%,60%{transform:translateX(-12px)}40%,80%{transform:translateX(12px)}}.shake{animation:shk .45s}
+.fixed.inset-0>.px{max-height:92vh;overflow-y:auto}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+/* ===== ตั้งค่ารายชื่อ (แก้ได้ตรงนี้) ===== */
+const SENIORS = ["พี่เอก", "พี่มายด์", "พี่บอส", "พี่เนย", "พี่เจ"];
+const INTERNS = ["น้องภูมิ", "น้องฟ้า", "น้องมิน", "น้องกัส"];
+
+const ITEMS = [
+  {id:"h1",cat:"hat",name:"มงกุฎ",e:"👑",price:100},{id:"h2",cat:"hat",name:"หมวกแก๊ป",e:"🧢",price:60},
+  {id:"h3",cat:"hat",name:"หมวกทรงสูง",e:"🎩",price:80},{id:"h4",cat:"hat",name:"โบว์",e:"🎀",price:50},
+  {id:"g1",cat:"glasses",name:"แว่นกันแดด",e:"🕶️",price:60},{id:"g2",cat:"glasses",name:"แว่นตา",e:"👓",price:40},
+  {id:"g3",cat:"glasses",name:"แว่นหัวใจ",e:"😍",price:70},
+  {id:"o0",cat:"outfit",name:"ชุดเทา",c:"#94a3b8",price:0},{id:"o1",cat:"outfit",name:"ชุดฮีโร่",c:"#ef4444",e:"⚡",price:80},
+  {id:"o2",cat:"outfit",name:"ชุดจอมเวท",c:"#8b5cf6",e:"✨",price:100},{id:"o3",cat:"outfit",name:"ชุดทะเล",c:"#0ea5e9",e:"🌊",price:60},
+  {id:"p1",cat:"pet",name:"แมว",e:"🐱",price:90},{id:"p2",cat:"pet",name:"หมา",e:"🐶",price:90},
+  {id:"p3",cat:"pet",name:"ลูกเจี๊ยบ",e:"🐥",price:60},{id:"p4",cat:"pet",name:"มังกร",e:"🐉",price:150},
+  {id:"f1",cat:"frame",name:"กรอบชมพู",c:"#f472b6",price:50},{id:"f2",cat:"frame",name:"กรอบทอง",c:"#fbbf24",price:70},
+  {id:"f3",cat:"frame",name:"กรอบรุ้ง",c:"rainbow",price:120},
+];
+const CATS = {hat:"🎩 หมวก/ทรงผม",glasses:"🕶️ แว่น/เครื่องประดับ",outfit:"👕 ชุด",pet:"🐾 สัตว์เลี้ยง",frame:"🖼️ กรอบโปรไฟล์"};
+const item = id => ITEMS.find(i => i.id === id);
+const KEY = "intern-quest-v1";
+const SKILLS = {"น้องภูมิ":["สายกราฟิก","สายคอนเทนต์"],"น้องฟ้า":["สายตัดต่อ"],"น้องมิน":["สายคอนเทนต์"],"น้องกัส":["สายกราฟิก","สายตัดต่อ"]};
+const STATUS = {ready:{e:"🟢",t:"พร้อมลุย"},break:{e:"🟡",t:"พักเที่ยง/ติดประชุม"},leave:{e:"🔴",t:"ลางาน"}};
+const OPEN_BONUS = 30;
+const GUILD_PASS = "202328";
+const dueOf = f => f.dueSel==="ระบุเอง" ? (f.dueCustom.trim()||"ระบุภายหลัง") : f.dueSel;
+const SND = {on:true,ctx:null};
+try{ SND.on = localStorage.getItem("iq-snd")!=="0"; }catch(e){}
+const sfx = name => { if(!SND.on) return; try{
+  const C = window.AudioContext||window.webkitAudioContext; SND.ctx = SND.ctx||new C(); const a = SND.ctx; if(a.state==="suspended") a.resume();
+  const seqs = {click:[[660,.05]],quest:[[523,.08],[659,.08],[784,.16]],coin:[[988,.07],[1319,.25]],nope:[[200,.15],[140,.22]]};
+  let t = a.currentTime;
+  (seqs[name]||[]).forEach(([fr,d])=>{const o=a.createOscillator(),g=a.createGain(); o.type="square"; o.frequency.value=fr; g.gain.setValueAtTime(.08,t); g.gain.exponentialRampToValueAtTime(.001,t+d); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+d); t+=d*.9;});
+}catch(e){} };
+document.addEventListener("click",e=>{ if(e.target.closest && e.target.closest("button")) sfx("click"); });
+function SoundBtn() {
+  const [on,setOn] = useState(SND.on);
+  return <button className="btn bg-amber-300 text-black" style={{position:"fixed",top:"calc(env(safe-area-inset-top,0px) + 8px)",right:8,zIndex:60}} title="เสียง" onClick={()=>{SND.on=!SND.on; setOn(SND.on); try{localStorage.setItem("iq-snd",SND.on?"1":"0");}catch(e){}}}>{on?"🔊":"🔇"}</button>;
+}
+Object.assign(SKILLS,{"น้องภูมิ":["สายดาต้า"],"น้องฟ้า":["สายกราฟิก"],"น้องมิน":["สายตัดต่อ"],"น้องกัส":["สายคอนเทนต์"]});
+const norm = d => { d.roster = d.roster||Object.keys(d.interns); INTERNS.splice(0,INTERNS.length,...d.roster); d.acts = d.acts||[]; d.visits = d.visits||0; d.open = d.open || [
+  {id:901,title:"ถ่ายรูปสินค้า 10 ภาพ",brief:"โฟลเดอร์สินค้า: https://example.com/products",by:"พี่เอก",urgent:false,status:"todo",coins:50+OPEN_BONUS},
+  {id:902,title:"ทำสไลด์สรุปประชุมด่วน",brief:"สรุป 5 หน้า ส่งก่อนเย็น",by:"พี่บอส",urgent:true,status:"todo",coins:100+OPEN_BONUS}];
+  INTERNS.forEach(n=>{const m=d.interns[n]; if(!m) return; if(m.cls) CLS[n]=m.cls; m.skills=SKILLS[n]||m.skills||[]; m.status=m.status||"ready"; m.log=m.log||[]; m.quests.forEach(x=>{if(!x.due) x.due=["วันนี้บ่าย","วันนี้เย็น","พรุ่งนี้"][x.id%3];});}); return d; };
+
+const q = (id,title,brief,by,urgent,status="todo") => ({id,title,brief,by,urgent,status,coins:urgent?100:50});
+const mkIntern = (coins,done,quests,owned=[],equip={}) => ({coins,done,quests,owned:["o0",...owned],equip:{outfit:"o0",...equip}});
+const seed = () => ({interns:{
+  "น้องภูมิ": mkIntern(120,4,[q(1,"ทำแบนเนอร์โปรโมชัน","ขนาด 1080x1080 ลิงก์ไฟล์: https://example.com/brief1","พี่เอก",false,"doing"),q(2,"สรุปรีเสิร์ชคู่แข่ง","ดูเพจคู่แข่ง 5 เจ้า สรุปเป็นสไลด์ 3 หน้า","พี่บอส",true)],["h2"],{hat:"h2"}),
+  "น้องฟ้า": mkIntern(250,9,[q(3,"ตัดคลิป Reels","คลิปยาว 30 วิ ใส่ซับไทย","พี่มายด์",false,"doing"),q(4,"ตอบคอมเมนต์ลูกค้า","ใช้ทอนเสียงสุภาพ ตามไกด์ไลน์","พี่เนย",false),q(5,"จัดไฟล์ Drive","จัดโฟลเดอร์ใหม่ตามเดือน","พี่เจ",true)],["g1","o1","p1"],{glasses:"g1",outfit:"o1",pet:"p1"}),
+  "น้องมิน": mkIntern(60,2,[]),
+  "น้องกัส": mkIntern(300,6,[q(6,"เขียนแคปชันโพสต์","5 แคปชัน โทนสนุกๆ","พี่เจ",false)],["h1","f2"],{hat:"h1",frame:"f2"}),
+}});
+
+function AvatarOld({equip,size=110,uid}) {
+  const o = item(equip.outfit||"o0"), f = equip.frame && item(equip.frame);
+  const stroke = !f ? "#cbd5e1" : f.c==="rainbow" ? `url(#rb${uid})` : f.c;
+  return (
+    <svg width={size} height={size*1.1} viewBox="0 0 100 110">
+      <defs><linearGradient id={`rb${uid}`}><stop offset="0" stopColor="#f43f5e"/><stop offset=".33" stopColor="#facc15"/><stop offset=".66" stopColor="#22c55e"/><stop offset="1" stopColor="#6366f1"/></linearGradient></defs>
+      <circle cx="50" cy="55" r="47" fill="#e0f2fe" stroke={stroke} strokeWidth={f?6:3}/>
+      <ellipse cx="50" cy="100" rx="28" ry="20" fill={o.c}/>
+      {o.e && <text x="50" y="98" fontSize="14" textAnchor="middle">{o.e}</text>}
+      <circle cx="50" cy="58" r="19" fill="#fcd9b6" stroke="#2b2140" strokeWidth="2"/>
+      <circle cx="43" cy="58" r="2" fill="#2b2140"/><circle cx="57" cy="58" r="2" fill="#2b2140"/>
+      <path d="M44 66q6 5 12 0" stroke="#2b2140" strokeWidth="2" fill="none"/>
+      {equip.glasses && <text x="50" y="63" fontSize="24" textAnchor="middle">{item(equip.glasses).e}</text>}
+      {equip.hat && <text x="50" y="44" fontSize="30" textAnchor="middle">{item(equip.hat).e}</text>}
+      {equip.pet && <text x="82" y="100" fontSize="22" textAnchor="middle">{item(equip.pet).e}</text>}
+    </svg>
+  );
+}
+
+const CLS = {"น้องภูมิ":{k:"mage",skin:"#f5cfa0",hair:"#2f2118",body:"#5b4bb5"},"น้องฟ้า":{k:"bunny",skin:"#f8d5b0",hair:"#8a5a3a",body:"#4f8a3d"},"น้องมิน":{k:"rogue",skin:"#f2c9a0",hair:"#4a3020",body:"#5a4a32"},"น้องกัส":{k:"knight",skin:"#f5cfa0",hair:"#6b3a1e",body:"#9aa6b3"}};
+function Avatar({equip,size=110,uid,who,fx}) {
+  const c = CLS[who]||CLS["น้องภูมิ"], k = c.k, ol = "#2a170a", sw = {stroke:ol,strokeWidth:2};
+  const fr = equip.frame && item(equip.frame);
+  const ring = !fr ? "#cdb98a" : fr.c==="rainbow" ? `url(#rb${uid})` : fr.c;
+  const bc = equip.outfit && equip.outfit!=="o0" ? item(equip.outfit).c : c.body;
+  const tired = fx==="full", H = !!equip.hat;
+  return (
+    <svg width={size} height={size*1.1} viewBox="0 0 100 110" shapeRendering="crispEdges" style={{overflow:"visible"}}>
+      <defs><linearGradient id={`rb${uid}`}><stop offset="0" stopColor="#f43f5e"/><stop offset=".33" stopColor="#facc15"/><stop offset=".66" stopColor="#22c55e"/><stop offset="1" stopColor="#6366f1"/></linearGradient></defs>
+      <circle cx="50" cy="56" r="47" fill="#fff3cf" stroke={ring} strokeWidth={fr?6:3}/>
+      {equip.pet ? <text x="82" y="100" fontSize="22" textAnchor="middle">{item(equip.pet).e}</text>
+      : k==="mage" ? <g className="idle"><rect x="4" y="86" width="14" height="10" fill="#e0742e"/><rect x="2" y="80" width="9" height="8" fill="#e0742e"/><rect x="4" y="82" width="2" height="2" fill={ol}/><polygon points="10,86 16,76 20,86" fill="#b8431f"/></g>
+      : k==="bunny" ? <g className="idle"><rect x="76" y="88" width="16" height="10" fill="#f0a24a"/><rect x="82" y="80" width="10" height="10" fill="#f0a24a"/><rect x="82" y="77" width="3" height="4" fill="#f0a24a"/><rect x="89" y="77" width="3" height="4" fill="#f0a24a"/><rect x="84" y="84" width="2" height="2" fill={ol}/><rect x="88" y="84" width="2" height="2" fill={ol}/></g>
+      : k==="rogue" ? <g className="idle"><ellipse cx="14" cy="94" rx="10" ry="7" fill="#f0883a"/><ellipse cx="86" cy="94" rx="10" ry="7" fill="#6fd16f"/><rect x="10" y="91" width="2" height="3" fill={ol}/><rect x="16" y="91" width="2" height="3" fill={ol}/><rect x="82" y="91" width="2" height="3" fill={ol}/><rect x="88" y="91" width="2" height="3" fill={ol}/></g> : null}
+      <g className="idle">
+        <rect x="38" y="84" width="9" height="10" fill="#4a2f1a" {...sw}/><rect x="53" y="84" width="9" height="10" fill="#4a2f1a" {...sw}/>
+        <rect x="30" y="66" width="7" height="14" fill={bc} {...sw}/><rect x="63" y="66" width="7" height="14" fill={bc} {...sw}/>
+        <rect x="36" y="64" width="28" height="20" fill={bc} {...sw}/><rect x="36" y="77" width="28" height="4" fill="#5a3a1e"/><rect x="47" y="76" width="6" height="6" fill="#e8b92c"/>
+        {k==="mage" && <g><rect x="66" y="68" width="16" height="12" fill="#7a3b1e" {...sw}/><rect x="68" y="70" width="12" height="8" fill="#f6e7c1"/></g>}
+        {k==="bunny" && <g><line x1="20" y1="96" x2="28" y2="62" stroke="#8a5a3a" strokeWidth="3"/><rect x="24" y="52" width="8" height="10" fill="#ee6aa7"/><rect x="24" y="52" width="8" height="4" fill="#5ac8fa"/></g>}
+        {k==="knight" && <g><rect x="76" y="54" width="5" height="34" fill="#dfe6ee" {...sw}/><rect x="71" y="76" width="15" height="4" fill="#e8b92c" {...sw}/></g>}
+        {k==="archer" && <g><path d="M76 56 Q94 76 76 98" stroke="#8a5a3a" strokeWidth="3" fill="none"/><line x1="76" y1="56" x2="76" y2="98" stroke="#fff" strokeWidth="1"/></g>}
+        {k==="cleric" && <g><line x1="78" y1="58" x2="78" y2="96" stroke="#8a5a3a" strokeWidth="3"/><circle cx="78" cy="54" r="5" fill="#ffd24a" {...sw}/></g>}
+        {k==="alchemist" && <g><rect x="70" y="74" width="10" height="10" fill="#9be07a" {...sw}/><rect x="73" y="68" width="4" height="7" fill="#cfe8f5"/></g>}
+        <rect x="31" y="34" width="38" height="30" fill={c.skin} {...sw}/>
+        <rect x="29" y="30" width="42" height="12" fill={c.hair}/><rect x="29" y="30" width="8" height="28" fill={c.hair}/><rect x="63" y="30" width="8" height="28" fill={c.hair}/>
+        {tired ? <g><rect x="40" y="52" width="7" height="2" fill={ol}/><rect x="55" y="52" width="7" height="2" fill={ol}/></g> : <g><rect x="40" y="46" width="7" height="10" fill={ol}/><rect x="42" y="47" width="3" height="3" fill="#fff"/><rect x="55" y="46" width="7" height="10" fill={ol}/><rect x="57" y="47" width="3" height="3" fill="#fff"/></g>}
+        <rect x="35" y="57" width="5" height="3" fill="#f59ca0"/><rect x="62" y="57" width="5" height="3" fill="#f59ca0"/><rect x="47" y="59" width="6" height="2" fill="#a0402f"/>
+        {equip.glasses && <text x="50" y="58" fontSize="24" textAnchor="middle">{item(equip.glasses).e}</text>}
+        {k==="rogue" && !H && <rect x="28" y="26" width="44" height="14" fill="#3f5a2a" {...sw}/>}
+        {k==="rogue" && <g><rect x="30" y="35" width="40" height="3" fill="#5a3a1e"/><circle cx="42" cy="36" r="6" fill="#8fd3f0" stroke="#e8b92c" strokeWidth="2"/><circle cx="58" cy="36" r="6" fill="#8fd3f0" stroke="#e8b92c" strokeWidth="2"/></g>}
+        {k==="mage" && !H && <g><polygon points="50,2 30,36 70,36" fill="#5b4bb5" {...sw}/><rect x="22" y="34" width="56" height="6" fill="#4a3b9a" {...sw}/><rect x="34" y="29" width="32" height="5" fill="#e8b92c"/></g>}
+        {k==="bunny" && !H && <g><rect x="36" y="4" width="9" height="28" fill="#f8ece0" {...sw}/><rect x="39" y="9" width="3" height="18" fill="#f5a0b5"/><rect x="55" y="4" width="9" height="28" fill="#f8ece0" {...sw}/><rect x="58" y="9" width="3" height="18" fill="#f5a0b5"/></g>}
+        {k==="knight" && !H && <g><polygon points="28,36 6,20 14,46" fill="#fff" {...sw}/><polygon points="72,36 94,20 86,46" fill="#fff" {...sw}/><rect x="44" y="12" width="12" height="18" fill="#c0392b" {...sw}/><rect x="28" y="28" width="44" height="18" fill="#b9c3cf" {...sw}/><rect x="34" y="38" width="32" height="4" fill={ol}/></g>}
+        {k==="archer" && !H && <g><rect x="28" y="26" width="44" height="14" fill="#2f7d4a" {...sw}/><rect x="62" y="12" width="4" height="18" fill="#e8b92c"/></g>}
+        {k==="cleric" && !H && <g><rect x="29" y="28" width="42" height="8" fill="#f4f0fa" {...sw}/><ellipse cx="50" cy="20" rx="14" ry="4" fill="none" stroke="#ffd24a" strokeWidth="3"/></g>}
+        {k==="alchemist" && !H && <g><rect x="34" y="18" width="32" height="16" fill="#a85a2a" {...sw}/><rect x="28" y="32" width="44" height="5" fill="#7a3f1a" {...sw}/></g>}
+        {H && <text x="50" y="34" fontSize="30" textAnchor="middle">{item(equip.hat).e}</text>}
+      </g>
+      {fx==="full" && <g><text className="flame" x="4" y="72" fontSize="24">🔥</text><text className="flame" x="74" y="72" fontSize="24">🔥</text><text className="flame" x="38" y="108" fontSize="20">🔥</text><text className="blink" x="66" y="22" fontSize="14">💤</text></g>}
+      {fx==="ready" && <text className="heart" x="72" y="30" fontSize="16">❤️</text>}
+    </svg>
+  );
+}
+
+function SlotBar({n}) {
+  const full = n>=3;
+  return (<div>
+    <div className="flex gap-1 items-center">{[0,1,2].map(i=><div key={i} className={`slot ${i<n?(full?"slot-red":"slot-on"):""}`}>{i<n?"📜":""}</div>)}<span className="text-xs font-black ml-1">{n}/3 Slots</span></div>
+    <div className={`font-black ${full?"text-lg blink":"text-xs"}`} style={full?{color:"#ff4a3a"}:null}>{full?"คิวเต็ม! 🔥 (Queue Full)":n===0?"Ready for Quest":"กำลังทำเควส"}</div>
+  </div>);
+}
+
+function SlotBarOld({n}) {
+  const col = n===0?"bg-green-500":n<3?"bg-orange-400":"bg-red-500";
+  const label = n===0?"ว่างพร้อมลุย":n<3?"กำลังทำเควส":"คิวเต็ม!";
+  return (<div>
+    <div className="flex gap-1">{[0,1,2].map(i=><div key={i} className={`h-4 flex-1 rounded border-2 border-[var(--line)] ${i<n?col:"bg-gray-200 dark:bg-gray-600"}`}/>)}</div>
+    <div className="text-xs font-bold mt-1">{n}/3 · {label}</div>
+  </div>);
+}
+
+function PassModal({onOk,onClose}) {
+  const [code,setCode] = useState("");
+  const [err,setErr] = useState(false);
+  const [shake,setShake] = useState(false);
+  const check = c => { if(c===GUILD_PASS){ onOk(); } else { setErr(true); setShake(true); sfx("nope"); if(window.__LOG) window.__LOG("security","ไม่ทราบ","มีการใส่รหัสฝั่งพี่ผิด"); setTimeout(()=>{setShake(false);setCode("");},450); } };
+  const set = v => { v=v.replace(/\D/g,"").slice(0,6); setCode(v); setErr(false); if(v.length===6) check(v); };
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div className={`px p-5 w-full max-w-xs text-center ${shake?"shake":""}`} style={{background:"repeating-linear-gradient(90deg,#7a4e28 0 18px,#6b4423 18px 20px)",color:"#f6e7c1",borderColor:"#d9a441"}} onClick={e=>e.stopPropagation()}>
+        <div className="text-5xl" style={{filter:"drop-shadow(0 0 8px #ffd96a)"}}>🔒</div>
+        <div className="font-black text-lg mt-1" style={{color:"#ffd96a"}}>ประตูลับห้องหัวหน้ากิลด์</div>
+        <div className="text-xs opacity-80">ใส่รหัสผ่าน 6 หลักเพื่อเข้าฝั่งพี่ในทีม</div>
+        <input autoFocus type="password" inputMode="numeric" autoComplete="off" maxLength={6} value={code} onChange={e=>set(e.target.value)} className="w-full mt-3 text-center text-2xl border-4 rounded p-2 text-black" style={{letterSpacing:"0.4em",background:"#f6e7c1",borderColor:"#2a170a"}} placeholder="••••••"/>
+        {err && <div className="text-sm font-black mt-2" style={{color:"#ff8a7a"}}>❌ รหัสเวทมนตร์ไม่ถูกต้อง! เฉพาะพี่ในทีมเท่านั้นนะ</div>}
+        <div className="grid grid-cols-3 gap-2 mt-3">
+          {[1,2,3,4,5,6,7,8,9].map(n=><button key={n} className="btn bg-stone-400 text-black text-xl" onClick={()=>set(code+n)}>{n}</button>)}
+          <button className="btn bg-red-400 text-black" onClick={()=>set("")}>C</button>
+          <button className="btn bg-stone-400 text-black text-xl" onClick={()=>set(code+"0")}>0</button>
+          <button className="btn bg-amber-400 text-black" onClick={()=>set(code.slice(0,-1))}>⌫</button>
+        </div>
+        <button className="btn bg-white text-black text-sm mt-3" onClick={onClose}>ยกเลิก</button>
+      </div>
+    </div>
+  );
+}
+
+function Login({onLogin,initRole}) {
+  const [role,setRole] = useState(initRole||null);
+  const [ask,setAsk] = useState(false);
+  const names = role==="senior"?SENIORS:INTERNS;
+  return (
+    <div className="max-w-3xl mx-auto p-6 text-center">
+      {ask && <PassModal onOk={()=>{setAsk(false);setRole("senior");}} onClose={()=>setAsk(false)}/>}
+      <div className="ptitle text-lg mt-6 blink" style={{color:"#ffd96a",textShadow:"3px 3px 0 #2a170a"}}>▶ START GAME ◀</div>
+      <p className="mt-2 opacity-70">เลือกฝั่งของคุณเพื่อเริ่มเกม</p>
+      {!role ? (
+        <div className="grid sm:grid-cols-2 gap-4 mt-8">
+          <button onClick={()=>setAsk(true)} className="px p-8 hover:-translate-y-1 transition"><div className="text-6xl">🧙‍♂️</div><div className="text-xl font-black mt-2">ผู้มอบเควส</div><div className="text-sm opacity-70">พี่ในทีม</div></button>
+          <button onClick={()=>setRole("intern")} className="px p-8 hover:-translate-y-1 transition"><div className="text-6xl">🧑‍🎓</div><div className="text-xl font-black mt-2">ผู้รับเควส</div><div className="text-sm opacity-70">น้องฝึกงาน</div></button>
+        </div>
+      ) : (
+        <div className="mt-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {names.map((n,i)=>(
+              <button key={n} onClick={()=>onLogin({role,name:n})} className="px p-4 hover:-translate-y-1 transition">
+                <div className="flex justify-center">{role==="intern" ? <Avatar equip={{outfit:"o0"}} uid={"l"+i} size={80} who={n}/> : <div className="text-6xl">{["🧑‍💼","👩‍💼","🧔","👩‍🎨","🧑‍💻"][i%5]}</div>}</div>
+                <div className="font-black mt-1">{n}</div>
+              </button>))}
+          </div>
+          <button className="btn mt-6 bg-white text-black" onClick={()=>setRole(null)}>← กลับ</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AssignModal({intern,senior,onClose,onSubmit,extra,ok=true}) {
+  const [f,setF] = useState({title:"",brief:"",urgent:false,dueSel:"วันนี้เย็น",dueCustom:""});
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40" onClick={onClose}>
+      <div className="px p-5 w-full max-w-md" onClick={e=>e.stopPropagation()}>
+        <h3 className="text-lg font-black">📜 มอบเควสให้ {intern}</h3>{extra}
+        <label className="text-sm font-bold block mt-3">ผู้สั่งงาน</label>
+        <input className="w-full border-2 rounded p-2 bg-gray-100 text-black" value={senior} readOnly/>
+        <label className="text-sm font-bold block mt-3">ชื่อเควส</label>
+        <input className="w-full border-2 rounded p-2 text-black" value={f.title} onChange={e=>setF({...f,title:e.target.value})}/>
+        <label className="text-sm font-bold block mt-3">รายละเอียดบรีฟ / ลิงก์</label>
+        <textarea rows="4" className="w-full border-2 rounded p-2 text-black" value={f.brief} onChange={e=>setF({...f,brief:e.target.value})}/>
+        <label className="text-sm font-bold block mt-3">กำหนดส่ง</label>
+        <div className="grid grid-cols-2 gap-2">{["วันนี้บ่าย","วันนี้เย็น","พรุ่งนี้","ระบุเอง"].map(v=><button key={v} className={`btn text-sm text-black ${f.dueSel===v?"bg-yellow-300":"bg-white"}`} onClick={()=>setF({...f,dueSel:v})}>⏰ {v}</button>)}</div>
+        {f.dueSel==="ระบุเอง" && <input className="w-full border-2 rounded p-2 text-black mt-2" placeholder="เช่น ศุกร์ 15:00" value={f.dueCustom} onChange={e=>setF({...f,dueCustom:e.target.value})}/>}
+        <label className="text-sm font-bold block mt-3">ระดับความด่วน</label>
+        <div className="grid grid-cols-2 gap-2">
+          <button className={`btn ${!f.urgent?"bg-green-300 text-black":"bg-white text-black"}`} onClick={()=>setF({...f,urgent:false})}>ปกติ · 50 🪙</button>
+          <button className={`btn ${f.urgent?"bg-red-300 text-black":"bg-white text-black"}`} onClick={()=>setF({...f,urgent:true})}>ด่วนพิเศษ · 100 🪙</button>
+        </div>
+        <div className="flex gap-2 mt-5 justify-end">
+          <button className="btn bg-white text-black" onClick={onClose}>ยกเลิก</button>
+          <button className="btn bg-yellow-300 text-black" disabled={!f.title.trim()||!ok} onClick={()=>onSubmit(f)}>มอบเควส!</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const QR = {
+  intern:["ขอเรฟเพิ่มหน่อยครับ 🙏","ตรงนี้ต้องทำไซส์ไหนนะครับ?","กำลังเร่งปั่นให้เลยครับ! 🔥"],
+  senior:["ปรับแก้นิดนึงนะ","ยึดตามบรีฟล่าสุดในแชทนี้เลย","งานผ่านแล้ว กดส่งเควสได้เลย! 🎉"]};
+const SEN_AV = ["🧑‍💼","👩‍💼","🧔","👩‍🎨","🧑‍💻"];
+const unread = (x,role) => (x.chat||[]).filter(m=>(role==="senior"?m.role!=="senior":(m.role==="senior"||(x.party&&m.who!==x.owner))) && m.t>((x.seen||{})[role]||0)).length;
+const linkify = t => t.split(/(https?:\/\/\S+)/g).map((p,i)=>/^https?:\/\//.test(p)?<a key={i} href={p} target="_blank" rel="noopener noreferrer" className="underline text-blue-600">{p}</a>:p);
+
+function ChatBtn({x,role,onClick}) {
+  const n = unread(x,role);
+  return (<button className="btn bg-blue-500 text-white relative" onClick={onClick}>💬 แชทถามงาน{n>0&&<span className="bounce absolute -top-2 -right-2 min-w-[20px] h-5 px-1 rounded-full bg-red-500 text-white text-xs flex items-center justify-center border-2 border-[var(--line)]">{n}</span>}</button>);
+}
+
+function ChatModal({iname,qid,data,me,role,update,onClose}) {
+  const x = data.interns[iname].quests.find(z=>z.id===qid);
+  const [txt,setTxt] = useState("");
+  const [clTxt,setClTxt] = useState("");
+  const len = x ? (x.chat||[]).length : 0;
+  useEffect(()=>{ update(s=>{const y=s.interns[iname].quests.find(z=>z.id===qid); if(y){y.seen=y.seen||{}; y.seen[role]=Date.now();}}); const el=document.getElementById("chatbox"); if(el) el.scrollTop=el.scrollHeight; },[len]);
+  if(!x) return null;
+  const send = t => { t=t.trim(); if(!t) return; update(s=>{const y=s.interns[iname].quests.find(z=>z.id===qid); if(!y) return; const now=Date.now(); copiesOf(s,y).forEach(c=>{c.chat=c.chat||[]; c.chat.push({who:me,role,text:t,t:now});}); y.seen=y.seen||{}; y.seen[role]=now;}); setTxt(""); };
+  const setCl = fn => update(s=>{const y=s.interns[iname].quests.find(z=>z.id===qid); if(!y) return; copiesOf(s,y).forEach(c=>{c.cl=c.cl||[]; fn(c.cl);});});
+  const addCl = () => { const t=clTxt.trim(); if(!t) return; const id=Date.now(); setCl(l=>{l.push({id,text:t,done:false});}); setClTxt(""); };
+  const av = m => m.role==="intern" ? <Avatar equip={data.interns[m.who]?data.interns[m.who].equip:{}} uid={"c"+m.who} size={28} who={m.who}/> : <span className="text-2xl">{SEN_AV[Math.max(0,SENIORS.indexOf(m.who))%5]}</span>;
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40" onClick={onClose}>
+      <div className="px p-4 w-full max-w-md flex flex-col" style={{maxHeight:"85vh"}} onClick={e=>e.stopPropagation()}>
+        <div className="flex justify-between items-center gap-2"><b>💬 {x.title}</b><button className="btn text-sm bg-white text-black" onClick={onClose}>✕</button></div>
+        <div className="text-xs opacity-70">{iname} · สั่งโดย {x.by}</div>
+        {x.party && <div className="mt-1"><PartyBadge x={x} data={data}/>
+          <div className="mt-2 p-2 rounded border-2 border-dashed text-sm"><b>✅ เช็กลิสต์ร่วมตี้</b>
+            {(x.cl||[]).map(it=><label key={it.id} className="flex items-center gap-2"><input type="checkbox" checked={!!it.done} onChange={()=>setCl(l=>{const i=l.find(z=>z.id===it.id); if(i) i.done=!i.done;})}/><span className={it.done?"line-through opacity-60":""}>{it.text}</span></label>)}
+            <div className="flex gap-1 mt-1"><input className="flex-1 border-2 rounded p-1 text-black text-xs" placeholder="เพิ่มรายการ..." value={clTxt} onChange={e=>setClTxt(e.target.value)} onKeyDown={e=>{if(e.key==="Enter") addCl();}}/><button className="btn bg-yellow-300 text-black text-xs" onClick={addCl}>+</button></div></div></div>}
+        <div id="chatbox" className="flex-1 overflow-y-auto my-2 space-y-2" style={{minHeight:160}}>
+          {len===0&&<div className="text-sm opacity-60 text-center mt-6">ยังไม่มีข้อความ เริ่มคุยได้เลย</div>}
+          {(x.chat||[]).map((m,i)=>{const mine=m.who===me; return (
+            <div key={i} className={`flex gap-2 items-end ${mine?"flex-row-reverse":""}`}>{av(m)}
+              <div className={`rounded-xl border-2 border-[var(--line)] px-2 py-1 text-sm break-words text-black ${mine?"bg-green-200":"bg-white"}`} style={{maxWidth:"75%"}}>
+                <div className="text-xs font-bold">{m.who} <span className="font-normal opacity-60">{new Date(m.t).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"})}</span></div>
+                {linkify(m.text)}
+              </div>
+            </div>);})}
+        </div>
+        <div className="flex flex-wrap gap-1 mb-2">{QR[role].map(t=><button key={t} className="btn text-xs bg-yellow-200 text-black" onClick={()=>send(t)}>{t}</button>)}</div>
+        <div className="flex gap-2"><input className="flex-1 border-2 rounded p-2 text-black" placeholder="พิมพ์ข้อความ / แปะลิงก์..." value={txt} onChange={e=>setTxt(e.target.value)} onKeyDown={e=>{if(e.key==="Enter") send(txt);}}/><button className="btn bg-green-400 text-black" onClick={()=>send(txt)}>ส่ง</button></div>
+      </div>
+    </div>
+  );
+}
+
+let CUR = null;
+const RC = window.Recharts;
+const COLS = ["#c99a2e","#b3261e","#4f8a3d","#5b4bb5","#2f5f94"];
+const ERRKEY = "iq-errs";
+const logErr = m => { try{ const a=JSON.parse(localStorage.getItem(ERRKEY)||"[]"); a.unshift({t:Date.now(),msg:String(m).slice(0,200)}); localStorage.setItem(ERRKEY,JSON.stringify(a.slice(0,50))); }catch(e){} };
+window.addEventListener("error",e=>logErr(e.message));
+window.addEventListener("unhandledrejection",e=>logErr("Promise: "+(e.reason&&e.reason.message||e.reason)));
+const ACT_TYPES = {login:"🔑 ล็อกอิน",assign:"📜 มอบเควส",open:"📢 โพสต์เควสกลาง",take:"🙋 รับเควส",work:"🔥 เริ่มงาน",submit:"📦 ส่งงาน",approve:"✅ ตรวจผ่าน",revise:"🔧 ขอแก้",chat:"💬 แชท",shop:"🛍️ ร้านค้า",status:"🚦 สถานะ",security:"🔒 ความปลอดภัย"};
+const pushAct = (s,type,who,text) => { s.acts=s.acts||[]; s.acts.push({t:Date.now(),type,who,text}); if(s.acts.length>300) s.acts=s.acts.slice(-300); };
+const diffActs = (p,n) => {
+  const a = CUR?CUR.name:"ระบบ", T = x=>"["+x.title+"]";
+  INTERNS.forEach(nm=>{ const P=p.interns[nm], N=n.interns[nm]; if(!P||!N) return;
+    N.quests.forEach(x=>{ const o=P.quests.find(z=>z.id===x.id);
+      if(!o){ if((p.open||[]).some(z=>z.id===x.id)) pushAct(n,"take",nm,`${nm} รับเควสกลาง ${T(x)}`); else pushAct(n,"assign",a,`${a} มอบเควส ${T(x)} ให้${nm}`); }
+      else {
+        if(o.status!==x.status){ if(x.status==="review") pushAct(n,"submit",nm,`${nm} ส่งงาน ${T(x)} รอพี่ตรวจ`); else if(x.revise&&!o.revise) pushAct(n,"revise",a,`${a} ขอแก้งาน ${T(x)} ของ${nm}`); else if(x.status==="doing") pushAct(n,"work",nm,`${nm} เริ่มลุยไฟ ${T(x)}`); }
+        if((x.chat||[]).length>(o.chat||[]).length) pushAct(n,"chat",a,`${a} ส่งข้อความในเควส ${T(x)}`);
+      } });
+    P.quests.forEach(x=>{ if(!N.quests.some(z=>z.id===x.id) && N.done>P.done) pushAct(n,"approve",a,`${a} ตรวจผ่านงาน ${T(x)} ของ${nm} (+${x.coins} Coins)`); });
+    if(N.owned.length>P.owned.length){ const it=item(N.owned.find(i=>!P.owned.includes(i))); pushAct(n,"shop",nm,`${nm} ซื้อไอเทม [${it.name}] (-${it.price} Coins)`); }
+    else if(JSON.stringify(N.equip)!==JSON.stringify(P.equip)) pushAct(n,"shop",nm,`${nm} เปลี่ยนชุด/ไอเทมที่สวมใส่`);
+    if(N.status!==P.status) pushAct(n,"status",nm,`${nm} เปลี่ยนสถานะเป็น ${STATUS[N.status].e} ${STATUS[N.status].t}`);
+  });
+  (n.open||[]).forEach(x=>{ if(!(p.open||[]).some(z=>z.id===x.id)) pushAct(n,"open",a,`${a} โพสต์เควสกลาง [${x.title}]`); });
+};
+
+const copiesOf = (s,y) => y.party ? y.party.members.map(m=>s.interns[m]&&s.interns[m].quests.find(z=>z.party&&z.party.id===y.party.id)).filter(Boolean) : [y];
+const CLASSES = [{k:"mage",n:"พ่อมด",body:"#5b4bb5"},{k:"knight",n:"อัศวิน",body:"#9aa6b3"},{k:"rogue",n:"โจร",body:"#5a4a32"},{k:"archer",n:"นักธนู",body:"#2f7d4a"},{k:"cleric",n:"นักบวช",body:"#e8e4f0"},{k:"alchemist",n:"นักเล่นแร่แปรธาตุ",body:"#a85a2a"},{k:"bunny",n:"นักผจญภัย",body:"#4f8a3d"}];
+const SKILL_PRESETS = ["สายกราฟิก","สายตัดต่อ","สายคอนเทนต์","สายดาต้า"];
+const HAIRS = ["#2f2118","#6b3a1e","#c98a3a","#d9577a"], SKINS = ["#f8d5b0","#f2c9a0","#d9a47a"];
+
+function PartyBadge({x,data}) {
+  return <span className="inline-flex items-center gap-1 ml-1 px-1 rounded border-2 border-[var(--line)] align-middle" style={{background:"#c8e6ff",color:"#1b3a5c"}}><span className="text-xs font-black">🛡️ เควสร่วมตี้</span>{x.party.members.map(m=>data.interns[m]&&<Avatar key={m} equip={data.interns[m].equip} uid={"pb"+x.id+m} size={22} who={m}/>)}</span>;
+}
+
+function RosterModal({data,update,onClose}) {
+  const [name,setName] = useState(""), [skills,setSkills] = useState([]), [extra,setExtra] = useState(""), [k,setK] = useState("mage"), [hair,setHair] = useState(HAIRS[0]), [skin,setSkin] = useState(SKINS[0]), [del,setDel] = useState(null), [err,setErr] = useState("");
+  const cl = CLASSES.find(c=>c.k===k);
+  CLS["__new"] = {k,skin,hair,body:cl.body};
+  const add = () => { const nm=name.trim(); if(!nm) return setErr("กรอกชื่อน้องก่อนนะ"); if(data.roster.includes(nm)) return setErr("มีชื่อนี้ในกิลด์แล้ว");
+    const sk=[...skills,...(extra.trim()?[extra.trim()]:[])], cls={k,skin,hair,body:cl.body};
+    update(s=>{ s.roster.push(nm); const m=mkIntern(0,0,[]); Object.assign(m,{skills:sk,status:"ready",log:[],cls}); s.interns[nm]=m; CLS[nm]=cls; });
+    setName(""); setSkills([]); setExtra(""); setErr(""); sfx("quest"); };
+  const rm = nm => { update(s=>{ s.roster=s.roster.filter(z=>z!==nm); delete s.interns[nm]; Object.values(s.interns).forEach(m=>m.quests.forEach(q=>{ if(q.party) q.party.members=q.party.members.filter(z=>z!==nm); })); }); setDel(null); };
+  return (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40" onClick={onClose}>
+    <div className="px p-5 w-full max-w-lg" onClick={e=>e.stopPropagation()}>
+      <div className="flex justify-between items-center"><h3 className="font-black text-lg">⚙️ จัดการสมาชิกกิลด์</h3><button className="btn bg-white text-black text-sm" onClick={onClose}>✕</button></div>
+      <div className="mt-2 text-sm font-bold">สมาชิกปัจจุบัน ({data.roster.length})</div>
+      <div className="space-y-1">{data.roster.map(nm=>{ const m=data.interns[nm]; return (<div key={nm} className="flex items-center gap-2 border-2 rounded p-1 border-[var(--line)]">
+        <Avatar equip={m.equip} uid={"r"+nm} size={36} who={nm}/><div className="flex-1 text-sm"><b>{nm}</b> <span className="text-xs">{(m.skills||[]).join(", ")}</span></div>
+        {del===nm ? <span className="text-xs">ลบ? ({m.quests.length} เควสในคิวจะหาย) <button className="btn bg-red-500 text-white text-xs" onClick={()=>rm(nm)}>ยืนยันลบ</button> <button className="btn bg-white text-black text-xs" onClick={()=>setDel(null)}>ยกเลิก</button></span>
+        : <button className="btn bg-red-300 text-black text-xs" disabled={data.roster.length<=1} onClick={()=>setDel(nm)}>🎓 ลบ/จบคอร์ส</button>}
+      </div>);})}</div>
+      <div className="mt-4 text-sm font-bold">➕ เพิ่มน้องใหม่</div>
+      <div className="flex gap-3 items-start mt-1">
+        <div className="portrait"><Avatar equip={{outfit:"o0"}} uid="rn" size={84} who="__new"/></div>
+        <div className="flex-1">
+          <input className="w-full border-2 rounded p-2 text-black" placeholder="ชื่อ เช่น น้องแพร" value={name} onChange={e=>{setName(e.target.value);setErr("");}}/>
+          <div className="flex flex-wrap gap-1 mt-2">{CLASSES.map(c=><button key={c.k} className={`btn text-xs text-black ${k===c.k?"bg-yellow-300":"bg-white"}`} onClick={()=>setK(c.k)}>{c.n}</button>)}</div>
+          <div className="flex gap-2 mt-2 items-center text-xs">ผม {HAIRS.map(h=><button key={h} onClick={()=>setHair(h)} style={{width:22,height:22,background:h,border:hair===h?"3px solid #ffd24a":"2px solid #2a170a"}}/>)} ผิว {SKINS.map(h=><button key={h} onClick={()=>setSkin(h)} style={{width:22,height:22,background:h,border:skin===h?"3px solid #ffd24a":"2px solid #2a170a"}}/>)}</div>
+        </div>
+      </div>
+      <div className="text-xs font-bold mt-2">ป้ายสายอาชีพ</div>
+      <div className="flex flex-wrap gap-1">{SKILL_PRESETS.map(sk=><button key={sk} className={`btn text-xs text-black ${skills.includes(sk)?"bg-green-400":"bg-white"}`} onClick={()=>setSkills(skills.includes(sk)?skills.filter(z=>z!==sk):[...skills,sk])}>{sk}</button>)}</div>
+      <input className="w-full border-2 rounded p-1 text-black text-sm mt-1" placeholder="พิมพ์สายอาชีพเพิ่มเอง (ไม่บังคับ)" value={extra} onChange={e=>setExtra(e.target.value)}/>
+      {err && <div className="text-sm font-black mt-1" style={{color:"#b3261e"}}>{err}</div>}
+      <button className="btn bg-green-400 text-black w-full mt-3" onClick={add}>✨ สร้างตัวละครน้องใหม่</button>
+    </div></div>);
+}
+
+function ReviewModal({x,n,onClose,onApprove,onRevise}) {
+  const [fix,setFix] = useState(null);
+  const ok = /^https?:\/\//.test(x.link||"");
+  return (<div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40" onClick={onClose}>
+    <div className="px p-5 w-full max-w-md" style={{maxHeight:"90vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+      <h3 className="font-black text-lg">🔍 ตรวจงาน: {x.title}</h3>
+      <div className="text-xs opacity-70">ส่งโดย {n} · สั่งโดย {x.by}{x.due&&" · ⏰ "+x.due}</div>
+      <div className="mt-3 text-sm font-bold">📜 บรีฟเดิมที่สั่งไว้</div>
+      <div className="p-2 rounded border-2 border-dashed text-sm whitespace-pre-wrap break-words">{x.brief||"(ไม่มีรายละเอียด)"}</div>
+      <div className="mt-3 text-sm font-bold">🔗 ผลงานที่น้องส่งมา</div>
+      {ok ? <a href={x.link} target="_blank" rel="noopener noreferrer" className="btn bg-sky-400 text-black inline-block break-all">🔗 เปิดดูผลงาน (แท็บใหม่)</a> : <div className="text-sm break-all">{x.link||"(ไม่ได้แนบลิงก์)"}</div>}
+      <div className="mt-3 text-sm font-bold">💬 หมายเหตุจากน้อง</div>
+      <div className="p-2 rounded border-2 text-sm whitespace-pre-wrap break-words">{x.note||"(ไม่มีหมายเหตุ)"}</div>
+      {fix===null ? (<div className="flex flex-wrap gap-2 mt-4"><button className="btn bg-green-400 text-black" onClick={onApprove}>✅ ยืนยันงานผ่าน (แจกเหรียญ + เคลียร์คิว)</button><button className="btn bg-orange-300 text-black" onClick={()=>setFix("")}>🔧 ขอแก้งาน</button></div>)
+      : (<div className="mt-4"><div className="text-sm font-bold">🔧 จุดที่ต้องแก้</div><textarea rows="3" autoFocus className="w-full border-2 rounded p-2 text-black" value={fix} onChange={e=>setFix(e.target.value)} placeholder="พิมพ์บอกน้องว่าต้องแก้ตรงไหน"/><div className="flex gap-2 mt-2 justify-end"><button className="btn bg-white text-black" onClick={()=>setFix(null)}>ย้อนกลับ</button><button className="btn bg-red-400 text-black" disabled={!fix.trim()} onClick={()=>onRevise(fix.trim())}>ส่งกลับให้น้องแก้</button></div></div>)}
+    </div></div>);
+}
+
+function Fb({data,keys}) {
+  const mx = Math.max(1,...data.flatMap(d=>keys.map(k=>d[k]||0)));
+  return <div className="space-y-1 text-xs">{data.map(d=><div key={d.name}><b>{d.name}</b>{keys.map((k,i)=><div key={k} className="flex items-center gap-1"><div style={{height:8,width:((d[k]||0)/mx*100)+"%",background:COLS[i]}}/>{d[k]||0}</div>)}</div>)}</div>;
+}
+
+function AdminDash({data,replace}) {
+  const [who,setWho] = useState("all"), [typ,setTyp] = useState("all"), [tick,setTick] = useState(0), [io,setIo] = useState(""), [msg,setMsg] = useState("");
+  const I = INTERNS.map(n=>({n,...data.interns[n]}));
+  const done = I.reduce((a,r)=>a+r.done,0), active = I.reduce((a,r)=>a+r.quests.length,0), total = done+active;
+  const rate = total?Math.round(done/total*100):0;
+  const bar = I.map(r=>({name:r.n.replace("น้อง",""),รับงาน:r.done+r.quests.length,เคลียร์:r.done}));
+  const cnt = {}; I.forEach(r=>{[...r.quests,...r.log].forEach(x=>{cnt[x.by]=(cnt[x.by]||0)+1;});}); data.open.forEach(x=>{cnt[x.by]=(cnt[x.by]||0)+1;});
+  const pie = Object.entries(cnt).map(([name,value])=>({name,value}));
+  const hrs = Array.from({length:24},(_,h)=>({name:h+":00",การใช้งาน:0})); data.acts.forEach(a=>{hrs[new Date(a.t).getHours()].การใช้งาน++;});
+  const acts = [...data.acts].reverse().filter(a=>(who==="all"||a.who===who)&&(typ==="all"||a.type===typ)).slice(0,80);
+  const t0 = performance.now(); let okStore = true;
+  try{ localStorage.setItem("iq-probe","1"); localStorage.getItem("iq-probe"); localStorage.removeItem("iq-probe"); }catch(e){ okStore=false; }
+  const ms = Math.round((performance.now()-t0)*100)/100;
+  let bytes = 0; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&(k.startsWith("intern-quest")||k.startsWith("iq-"))) bytes+=(k.length+localStorage.getItem(k).length)*2; } }catch(e){}
+  const kb = bytes/1024, pct = Math.min(100,kb/5120*100);
+  const chatKb = JSON.stringify(I.map(r=>r.quests.map(x=>x.chat||[]))).length*2/1024;
+  let errs = []; try{ errs = JSON.parse(localStorage.getItem(ERRKEY)||"[]"); }catch(e){}
+  const recent = errs.filter(e=>Date.now()-e.t<600000).length;
+  const st = (!okStore||pct>90)?["🔴","มีปัญหา"]:(recent>0||pct>70)?["🟡","ควรตรวจสอบ"]:["🟢","ระบบปกติ"];
+  const exportJ = () => { const j=JSON.stringify(data,null,1); setIo(j); try{ navigator.clipboard.writeText(j).then(()=>setMsg("📋 คัดลอก JSON แล้ว (หรือคัดลอกจากช่องด้านล่าง)"),()=>setMsg("คัดลอก JSON จากช่องด้านล่างได้เลย")); }catch(e){ setMsg("คัดลอก JSON จากช่องด้านล่างได้เลย"); } };
+  const importJ = () => { try{ const d=JSON.parse(io); if(!d||!d.interns) throw new Error("รูปแบบไม่ถูกต้อง"); if(!confirm("กู้คืนจะทับข้อมูลปัจจุบัน ยืนยัน?")) return; replace(d); setMsg("✅ กู้คืนสำเร็จ"); }catch(e){ setMsg("❌ กู้คืนไม่สำเร็จ: "+e.message); logErr("Import: "+e.message); } };
+  const clean = () => { if(!confirm("ล้างประวัติเก่า? (ไม่กระทบเหรียญ/คิวงาน)")) return; const d=JSON.parse(JSON.stringify(data)); d.acts=d.acts.slice(-50); INTERNS.forEach(n=>{const m=d.interns[n]; m.log=m.log.slice(0,20); m.quests.forEach(x=>{ if(x.chat) x.chat=x.chat.slice(-30); });}); try{localStorage.removeItem(ERRKEY);}catch(e){} replace(d); setMsg("🧹 ล้างประวัติเก่าแล้ว"); setTick(tick+1); };
+  return (<div className="mt-4 space-y-4">
+    <div className="plaque text-center">🛠️ หลังบ้านกิลด์</div>
+    <div className="grid grid-cols-3 gap-2">{[["👥","เข้าใช้งาน",data.visits],["📜","เควสทั้งหมด",total],["🎯","เคลียร์สำเร็จ",rate+"%"]].map(([i,l,v])=><div key={l} className="px p-3 text-center"><div className="text-2xl">{i}</div><div className="text-2xl font-black">{v}</div><div className="text-xs">{l}</div></div>)}</div>
+    <div className="px p-3"><b>📊 ผลงานน้องแต่ละคน</b>
+      {RC ? <RC.ResponsiveContainer width="100%" height={220}><RC.BarChart data={bar}><RC.CartesianGrid strokeDasharray="3 3"/><RC.XAxis dataKey="name"/><RC.YAxis allowDecimals={false}/><RC.Tooltip/><RC.Legend/><RC.Bar dataKey="รับงาน" fill="#c99a2e"/><RC.Bar dataKey="เคลียร์" fill="#4f8a3d"/></RC.BarChart></RC.ResponsiveContainer> : <Fb data={bar} keys={["รับงาน","เคลียร์"]}/>}</div>
+    <div className="grid md:grid-cols-2 gap-3">
+      <div className="px p-3"><b>🥧 พี่ที่สั่งงานบ่อยสุด</b>
+        {RC ? <RC.ResponsiveContainer width="100%" height={220}><RC.PieChart><RC.Pie data={pie} dataKey="value" nameKey="name" outerRadius={70} label>{pie.map((e,i)=><RC.Cell key={i} fill={COLS[i%5]}/>)}</RC.Pie><RC.Tooltip/><RC.Legend/></RC.PieChart></RC.ResponsiveContainer> : <Fb data={pie.map(p=>({name:p.name,งาน:p.value}))} keys={["งาน"]}/>}</div>
+      <div className="px p-3"><b>⏰ ช่วงเวลาใช้งาน (จากกิจกรรม)</b>
+        {RC ? <RC.ResponsiveContainer width="100%" height={220}><RC.LineChart data={hrs}><RC.CartesianGrid strokeDasharray="3 3"/><RC.XAxis dataKey="name" interval={3}/><RC.YAxis allowDecimals={false}/><RC.Tooltip/><RC.Line type="monotone" dataKey="การใช้งาน" stroke="#b3261e" strokeWidth={2}/></RC.LineChart></RC.ResponsiveContainer> : <Fb data={hrs.filter(h=>h.การใช้งาน>0)} keys={["การใช้งาน"]}/>}</div>
+    </div>
+    <div className="px p-3"><b>📜 ไทม์ไลน์กิจกรรม</b>
+      <div className="flex flex-wrap gap-2 my-2">
+        <select className="border-2 rounded p-1 text-black" value={who} onChange={e=>setWho(e.target.value)}><option value="all">ทุกคน</option>{[...SENIORS,...INTERNS].map(n=><option key={n}>{n}</option>)}</select>
+        <select className="border-2 rounded p-1 text-black" value={typ} onChange={e=>setTyp(e.target.value)}><option value="all">ทุกประเภท</option>{Object.entries(ACT_TYPES).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select>
+      </div>
+      <div className="overflow-y-auto text-sm space-y-1" style={{maxHeight:260}}>
+        {acts.length===0 && <div className="opacity-60">ยังไม่มีกิจกรรมที่ตรงเงื่อนไข</div>}
+        {acts.map((a,i)=><div key={i} className="border-b border-dashed pb-1"><b>{new Date(a.t).toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"})}</b> <span className="text-xs opacity-60">{new Date(a.t).toLocaleDateString("th-TH",{day:"numeric",month:"short"})}</span> - {a.text} <span className="text-xs opacity-60">{ACT_TYPES[a.type]}</span></div>)}
+      </div></div>
+    <div className="px p-3"><b>🩺 สถานะระบบ & จัดการข้อมูล</b>
+      <div className="text-lg font-black mt-1">{st[0]} {st[1]}</div>
+      <div className="text-sm">⏱️ ความหน่วงอ่าน/เขียนข้อมูล (จำลองจากเวลาจริงของเบราว์เซอร์): {ms} ms</div>
+      <div className="text-sm">🔌 การเชื่อมต่อข้อมูล: {okStore?"🟢 LocalStorage ใช้งานได้":"🔴 LocalStorage ใช้ไม่ได้"} · {navigator.onLine?"🌐 ออนไลน์":"📴 ออฟไลน์"}</div>
+      <div className="text-sm mt-2">💾 พื้นที่ความจำ: {kb.toFixed(1)} KB / ~5,120 KB ({pct.toFixed(1)}%) · แชทในคิวปัจจุบัน ~{chatKb.toFixed(1)} KB</div>
+      <div className="border-2 border-[var(--line)]" style={{height:16,background:"#8a6034"}}><div style={{height:"100%",width:Math.max(1,pct)+"%",background:pct>90?"#b3261e":pct>70?"#e8a22c":"#4f8a3d"}}/></div>
+      <div className="text-sm font-bold mt-3">🚨 Error Logs ({errs.length})</div>
+      <div className="text-xs space-y-1 overflow-y-auto" style={{maxHeight:110}}>{errs.length===0?<div className="opacity-60">ไม่พบข้อผิดพลาด 👍</div>:errs.slice(0,10).map((e,i)=><div key={i}>{new Date(e.t).toLocaleTimeString("th-TH")} — {e.msg}</div>)}</div>
+      <div className="flex flex-wrap gap-2 mt-3">
+        <button className="btn bg-sky-300 text-black text-sm" onClick={()=>setTick(tick+1)}>🔄 รีเฟรชสถานะ</button>
+        <button className="btn bg-green-400 text-black text-sm" onClick={exportJ}>💾 สำรองข้อมูล (Export JSON)</button>
+        <button className="btn bg-yellow-300 text-black text-sm" onClick={importJ}>📥 กู้คืนข้อมูล (Import JSON)</button>
+        <button className="btn bg-red-400 text-black text-sm" onClick={clean}>🧹 ล้างประวัติเก่า</button>
+      </div>
+      {msg && <div className="text-sm font-bold mt-2">{msg}</div>}
+      <textarea rows="4" className="w-full border-2 rounded p-2 text-black text-xs mt-2" placeholder="กด Export เพื่อดู JSON ที่นี่ หรือวาง JSON ที่สำรองไว้แล้วกด Import" value={io} onChange={e=>setIo(e.target.value)}/>
+    </div>
+  </div>);
+}
+
+function Hall({data}) {
+  const rows = INTERNS.map(n=>({n,...data.interns[n]})).sort((a,b)=>b.done-a.done||b.coins-a.coins);
+  const med = ["🥇","🥈","🥉"], col = ["#ffd24a","#d5dbe3","#cd7f32"];
+  const max = Math.max(1,rows[0]?rows[0].done:0);
+  return (<div className="mt-4 space-y-3">
+    <div className="plaque text-center">🏆 แท่นจัดอันดับผู้กล้า</div>
+    {rows.map((r,i)=>(<div key={r.n} className="px p-3 flex items-center gap-3" style={i<3?{borderColor:col[i]}:null}>
+      <div className="text-3xl text-center" style={{width:40}}>{med[i]||i+1}</div>
+      <div className="relative portrait">{i===0&&<div className="absolute text-xl" style={{top:-18,left:"50%",transform:"translateX(-50%)"}}>👑</div>}<Avatar equip={r.equip} uid={"h"+i} size={56} who={r.n}/></div>
+      <div className="flex-1"><div className="font-black">{r.n}</div><div className="text-sm">✅ เควสสำเร็จ {r.done} งาน · 🪙 {r.coins}</div>
+        <div className="mt-1 border-2 border-[var(--line)]" style={{height:12,background:"#8a6034"}}><div style={{height:"100%",width:(r.done/max*100)+"%",background:col[i]||"#a97c46"}}/></div></div>
+    </div>))}
+  </div>);
+}
+
+function OpenBoard({quests,blocked,onTake,onDel}) {
+  return (<div className="mt-4 space-y-3">
+    {quests.length===0&&<div className="px p-6 text-center">📭 ยังไม่มีเควสกลาง</div>}
+    {quests.map(x=>(<div key={x.id} className="px p-4">
+      <div className="flex justify-between gap-2"><b>{x.urgent?"🔥":"📢"} {x.title}</b><b className="whitespace-nowrap">+{x.coins} 🪙 <span className="text-xs">(โบนัส +{OPEN_BONUS})</span></b></div>
+      <div className="text-sm opacity-80">โพสต์โดย {x.by}</div>
+      <div className="mt-2 text-sm whitespace-pre-wrap break-words">{x.brief||"(ไม่มีรายละเอียด)"}</div>
+      {onTake&&<button disabled={blocked} className="btn mt-3 bg-yellow-300 text-black" onClick={()=>onTake(x)}>{blocked?"คิวเต็ม/ลางาน รับไม่ได้":"🙋 รับเควสนี้"}</button>}
+      {onDel&&<button className="btn mt-3 bg-white text-black" onClick={()=>onDel(x)}>🗑️ ถอนเควส</button>}
+    </div>))}
+  </div>);
+}
+
+function QuestLog({data,who}) {
+  const [f,setF] = useState(who||"all");
+  const rows = INTERNS.flatMap(n=>data.interns[n].log.map(l=>({...l,n}))).filter(l=>f==="all"||l.n===f).sort((a,b)=>b.t-a.t);
+  return (<div className="mt-4">
+    {!who&&<select className="border-2 rounded p-2 text-black mb-3" value={f} onChange={e=>setF(e.target.value)}><option value="all">ทุกคน</option>{INTERNS.map(n=><option key={n}>{n}</option>)}</select>}
+    {rows.length===0&&<div className="px p-6 text-center">📚 ยังไม่มีงานที่ส่งมอบ</div>}
+    <div className="space-y-2">{rows.map(l=>(<div key={l.t+l.n} className="px p-3 text-sm">
+      <div className="flex justify-between gap-2"><b>{l.open?"📢":"✅"} {l.title}</b><span className="whitespace-nowrap">+{l.coins} 🪙</span></div>
+      <div className="opacity-80">{l.n} · สั่งโดย {l.by} · {l.at}</div>
+      <div className="mt-1 break-all">🔗 {/^https?:\/\//.test(l.link)?<a className="underline text-blue-500" href={l.link} target="_blank" rel="noopener noreferrer">{l.link}</a>:(l.link||"(ไม่ได้แนบลิงก์)")}</div>
+    </div>))}</div>
+  </div>);
+}
+
+function SeniorView({me,data,update,replace}) {
+  const [target,setTarget] = useState(null);
+  const [tab,setTab] = useState("board");
+  const approve = (n,x) => { update(s=>{ const y=s.interns[n].quests.find(z=>z.id===x.id); if(!y) return; const names=y.party?y.party.members:[n]; names.forEach(nm=>{ const m=s.interns[nm]; if(!m) return; const q=m.quests.find(z=>z.id===x.id); if(!q) return; m.quests=m.quests.filter(z=>z!==q); m.coins+=q.coins; m.done+=1; m.log.unshift({id:q.id,t:Date.now(),title:q.title,by:q.by,link:q.link||"",coins:q.coins,open:!!q.open,at:new Date().toLocaleString("th-TH")}); }); }); sfx("coin"); };
+  const approveOld = (n,x) => { update(s=>{const m=s.interns[n]; const y=m.quests.find(z=>z.id===x.id); if(!y) return; m.quests=m.quests.filter(z=>z.id!==x.id); m.coins+=y.coins; m.done+=1; m.log.unshift({id:y.id,t:Date.now(),title:y.title,by:y.by,link:y.link||"",coins:y.coins,open:!!y.open,at:new Date().toLocaleString("th-TH")});}); sfx("coin"); };
+  const [rv,setRv] = useState(null);
+  const [roster,setRoster] = useState(false);
+  const [sel,setSel] = useState([]);
+  const partyPick = (<div className="mt-3"><div className="text-sm font-bold">เลือกสมาชิกตี้ (อย่างน้อย 2 คน)</div><div className="grid grid-cols-2 gap-2 mt-1">{INTERNS.map(nm=>{const d=data.interns[nm]; const bad=d.quests.length>=3||d.status==="leave"; const on=sel.includes(nm); return <button key={nm} disabled={bad} className={`btn text-sm text-black ${bad?"bg-gray-400":on?"bg-green-400":"bg-white"}`} onClick={()=>setSel(on?sel.filter(z=>z!==nm):[...sel,nm])}>{on?"☑ ":"☐ "}{nm}{bad&&<div className="text-xs">{d.status==="leave"?"🔴 ลางาน เข้าตี้ไม่ได้":"🔥 คิวเต็ม ชวนเข้าตี้ไม่ได้"}</div>}</button>;})}</div>{sel.length<2&&<div className="text-xs mt-1">เลือกให้ครบอย่างน้อย 2 คนก่อนสร้าง</div>}</div>);
+  const revise = (n,x,txt) => { update(s=>{ const y=s.interns[n].quests.find(z=>z.id===x.id); if(!y) return; const now=Date.now(); copiesOf(s,y).forEach(c=>{ c.status="doing"; c.revise=true; c.fixNote=txt; c.chat=c.chat||[]; c.chat.push({who:me,role:"senior",text:"🔧 ขอแก้งาน: "+txt,t:now}); }); }); };
+  const reviseOld = (n,x,txt) => { update(s=>{const y=s.interns[n].quests.find(z=>z.id===x.id); if(y){y.status="doing"; y.revise=true; y.fixNote=txt; y.chat=y.chat||[]; y.chat.push({who:me,role:"senior",text:"🔧 ขอแก้งาน: "+txt,t:Date.now()});}}); };
+  const [chat,setChat] = useState(null);
+  return (
+    <div className="max-w-5xl mx-auto p-4">
+      <div className="flex flex-wrap gap-2 mb-3">
+        <div className="plaque w-full text-center">กระดานเควสเด็กฝึกงาน</div>{[["board","🗺️ บอร์ดน้อง"],["open",`📢 เควสกลาง (${data.open.length})`],["log","📚 Quest Log"],["hall","🏆 Hall of Fame"],["admin","🛠️ หลังบ้าน"]].map(([k,v])=><button key={k} className={`btn text-black ${tab===k?"bg-yellow-300":"bg-white"}`} onClick={()=>setTab(k)}>{v}</button>)}
+        <button className="btn bg-pink-300 text-black" onClick={()=>setTarget("__open")}>➕ โพสต์เควสกลาง</button>
+        <button className="btn bg-blue-400 text-black" onClick={()=>{setSel([]);setTarget("__party");}}>⚔️ สร้างตี้ลุยเควส (Co-op Mode)</button>
+        <button className="btn bg-stone-300 text-black" onClick={()=>setRoster(true)}>⚙️ จัดการสมาชิกกิลด์ (เพิ่ม/ลบน้องฝึกงาน)</button>
+      </div>
+      {tab==="open"&&<OpenBoard quests={data.open} onDel={x=>update(s=>{s.open=s.open.filter(z=>z.id!==x.id);})}/>}
+      {tab==="log"&&<QuestLog data={data}/>}
+      {tab==="hall"&&<Hall data={data}/>}
+      {tab==="admin"&&<AdminDash data={data} replace={replace}/>}
+      <div className={`board grid md:grid-cols-2 gap-4 ${tab!=="board"?"hidden":""}`}>
+        {INTERNS.map((n,i)=>{const d=data.interns[n];const full=d.quests.length>=3, off=d.status==="leave", blocked=full||off;return (
+          <div key={n} className={`px p-4 ${full?"fullq":""}`}>
+            <div className="flex gap-3 items-center">
+              <div className="relative portrait"><Avatar equip={d.equip} uid={"s"+i} size={96} who={n} fx={d.quests.length>=3?"full":d.quests.length===0?"ready":""}/>{d.quests.some(x=>unread(x,"senior")>0)&&<div className="absolute bounce whitespace-nowrap text-xs font-black px-2 py-1 rounded-xl border-2 border-[var(--line)] bg-white text-black" style={{top:-12,left:0}}>💬 มีคำถาม!</div>}</div>
+              <div className="flex-1"><div className="font-black text-lg">{n} <span title={STATUS[d.status].t}>{STATUS[d.status].e}</span> <span className="text-sm font-black">{STATUS[d.status].t}</span></div><div className="flex flex-wrap gap-1">{d.skills.map(s=><span key={s} className="text-xs px-2 rounded-full border-2 border-[var(--line)] bg-purple-200 text-black">{s}</span>)}</div><div className="text-sm">🪙 {d.coins} · ✅ {d.done}</div><div className="mt-2"><SlotBar n={d.quests.length}/></div></div>
+            </div>
+            <div className="mt-3 space-y-1">
+              {d.quests.length===0 && <div className="text-sm opacity-60">ว่างมาก โยนงานมาเลย! (Ready for Quest)</div>}
+              {d.quests.map(x=>(
+                <div key={x.id} className="text-sm border-2 rounded-lg p-2 border-[var(--line)] flex flex-wrap justify-between gap-2">
+                  <span>{x.urgent?"🔥":"📌"} <b>{x.title}</b> {x.status==="doing"&&<span className="text-orange-500">(กำลังลุยไฟ)</span>}{x.revise&&x.status==="doing"&&<span className="text-red-400"> 🔧แก้ไข</span>}{x.party&&<PartyBadge x={x} data={data}/>}{x.due&&<span className="text-xs"> ⏰ {x.due}</span>}</span>
+                  <span className="whitespace-nowrap font-bold flex items-center gap-2">ติดงาน {x.by} <ChatBtn x={x} role="senior" onClick={()=>setChat({n,id:x.id})}/></span>
+                  {x.status==="review"&&<div className="w-full flex flex-wrap items-center gap-2 pt-1"><span className="blink font-black" style={{color:"#ffd96a"}}>⏳ รอพี่ตรวจ</span>{/^https?:\/\//.test(x.link||"")&&<a href={x.link} target="_blank" rel="noopener noreferrer" className="underline text-sky-300 text-xs">🔗 ดูผลงาน</a>}<button className="btn bg-green-400 text-black text-xs blink" onClick={()=>setRv({n,id:x.id})}>🔍 เปิดตรวจงานที่ส่ง</button></div>}
+                </div>))}
+            </div>
+            <button disabled={blocked} onClick={()=>setTarget(n)} className={`btn w-full mt-3 text-black ${blocked?"bg-red-300":"bg-yellow-300"}`}>{off?"🔴 ลางาน ล็อกชั่วคราว":full?"🚫 คิวเต็ม ห้ามสั่งเพิ่ม":"🎁 มอบเควส"}</button>
+          </div>);})}
+      </div>
+      {target && <AssignModal intern={target==="__party"?"ตี้ลุยเควส ⚔️":target} extra={target==="__party"?partyPick:null} ok={target!=="__party"||sel.length>=2} senior={me} onClose={()=>setTarget(null)} onSubmit={f=>{
+        update(s=>{if(target==="__party"){ const names=sel.filter(nm=>s.interns[nm]&&s.interns[nm].quests.length<3&&s.interns[nm].status!=="leave"); if(names.length<2) return; const id=Date.now(), party={id,members:names}; names.forEach(nm=>{ s.interns[nm].quests.push({id,title:f.title.trim(),brief:f.brief,by:me,urgent:f.urgent,status:"todo",coins:f.urgent?100:50,due:dueOf(f),party,owner:nm,chat:[],cl:[]}); }); return; } if(target==="__open"){s.open.push({id:Date.now(),title:f.title.trim(),brief:f.brief,by:me,urgent:f.urgent,status:"todo",coins:(f.urgent?100:50)+OPEN_BONUS,due:dueOf(f)});return;} const d=s.interns[target]; if(d.quests.length>=3||d.status==="leave") return;
+          d.quests.push({id:Date.now(),title:f.title.trim(),brief:f.brief,by:me,urgent:f.urgent,status:"todo",coins:f.urgent?100:50,due:dueOf(f)});});
+        sfx("quest");setSel([]);setTarget(null);}}/>}
+      {rv&&(()=>{const q=data.interns[rv.n].quests.find(z=>z.id===rv.id); return q?<ReviewModal x={q} n={rv.n} onClose={()=>setRv(null)} onApprove={()=>{approve(rv.n,q);setRv(null);}} onRevise={t=>{revise(rv.n,q,t);setRv(null);}}/>:null;})()}
+      {roster&&<RosterModal data={data} update={update} onClose={()=>setRoster(false)}/>}
+      {chat&&<ChatModal iname={chat.n} qid={chat.id} data={data} me={me} role="senior" update={update} onClose={()=>setChat(null)}/>}
+    </div>
+  );
+}
+
+function InternView({me,data,update}) {
+  const d = data.interns[me];
+  const [tab,setTab] = useState("quests");
+  const [open,setOpen] = useState(null);
+  const [cat,setCat] = useState("hat");
+  const [toast,setToast] = useState(null);
+  const [sub,setSub] = useState(null);
+  const [chat,setChat] = useState(null);
+  const [link,setLink] = useState("");
+  const [note,setNote] = useState("");
+  const take = x => update(s=>{const m=s.interns[me]; if(m.quests.length>=3||m.status==="leave") return; const i=s.open.findIndex(z=>z.id===x.id); if(i<0) return; const [o]=s.open.splice(i,1); o.open=true; m.quests.push(o);});
+  const finish = (x,lk) => { update(s=>{const m=s.interns[me];const y0=m.quests.find(z=>z.id===x.id); (y0?copiesOf(s,y0):[]).forEach(y=>{ y.status="review";y.revise=false;y.link=lk.trim();y.note=note.trim();y.fixNote=null;y.submittedAt=Date.now();});}); setSub(null); setLink(""); setNote(""); setToast({n:0,k:Date.now()}); setTimeout(()=>setToast(null),2200); };
+  const buy = it => update(s=>{const m=s.interns[me]; if(m.coins>=it.price&&!m.owned.includes(it.id)){m.coins-=it.price;m.owned.push(it.id);m.equip[it.cat]=it.id;}});
+  const toggle = it => update(s=>{const e=s.interns[me].equip; if(e[it.cat]===it.id){ if(it.cat!=="outfit") delete e[it.cat]; } else e[it.cat]=it.id;});
+  return (
+    <div className="max-w-4xl mx-auto p-4">
+      <div className="px p-4 flex gap-4 items-center">
+        <Avatar equip={d.equip} uid="me" size={100} who={me} fx={d.quests.length>=3?"full":d.quests.length===0?"ready":""}/>
+        <div><div className="text-xl font-black">{me}</div><div className="flex flex-wrap gap-1">{d.skills.map(s=><span key={s} className="text-xs px-2 rounded-full border-2 border-[var(--line)] bg-purple-200 text-black">{s}</span>)}</div><div className="flex flex-wrap gap-1 my-1">{Object.entries(STATUS).map(([k,v])=><button key={k} className={`btn text-xs text-black ${d.status===k?"bg-yellow-300":"bg-white"}`} onClick={()=>update(s=>{s.interns[me].status=k;})}>{v.e} {v.t}</button>)}</div><div className="font-bold">🪙 {d.coins} เหรียญ</div><div className="font-bold">🏆 เควสสำเร็จ {d.done} งาน</div></div>
+      </div>
+      <div className="flex gap-2 mt-4">
+        <button className={`btn text-black ${tab==="quests"?"bg-yellow-300":"bg-white"}`} onClick={()=>setTab("quests")}>📜 เควสของฉัน</button>
+        <button className={`btn text-black ${tab==="shop"?"bg-yellow-300":"bg-white"}`} onClick={()=>setTab("shop")}>🛍️ ร้านค้าแต่งตัว</button>
+        <button className={`btn text-black ${tab==="open"?"bg-yellow-300":"bg-white"}`} onClick={()=>setTab("open")}>📢 เควสกลาง ({data.open.length})</button>
+        <button className={`btn text-black ${tab==="log"?"bg-yellow-300":"bg-white"}`} onClick={()=>setTab("log")}>📚 Quest Log</button>
+        <button className={`btn text-black ${tab==="hall"?"bg-yellow-300":"bg-white"}`} onClick={()=>setTab("hall")}>🏆 Hall of Fame</button>
+      </div>
+      {tab==="open" ? <OpenBoard quests={data.open} blocked={d.quests.length>=3||d.status==="leave"} onTake={x=>{take(x);sfx("quest");}}/> : tab==="hall" ? <Hall data={data}/> : tab==="log" ? <QuestLog data={data} who={me}/> : tab==="quests" ? (
+        <div className="mt-4 space-y-3">
+          <SlotBar n={d.quests.length}/>
+          {d.quests.length===0 && <div className="px p-6 text-center">🎉 คิวว่างแล้ว รอพี่ๆ มอบเควสใหม่!</div>}
+          {d.quests.map(x=>(
+            <div key={x.id} className="px p-4">
+              <div className="flex justify-between gap-2"><div className="font-black">{x.urgent?"🔥":"📌"} {x.title}{x.due&&<span className="text-xs font-normal"> ⏰ {x.due}</span>}{x.party&&<PartyBadge x={x} data={data}/>}</div><div className="font-bold whitespace-nowrap">+{x.coins} 🪙</div></div>
+              <div className="text-sm opacity-80">จาก {x.by} · {x.revise&&x.status!=="review"?"🔥 แก้งานด่วน · ":""}{x.status==="review"?"⏳ รอพี่ตรวจ":x.status==="doing"?"🔥 กำลังลุยไฟ":"รอเริ่ม"}</div>
+              {x.revise&&x.status!=="review"&&x.fixNote&&<div className="mt-2 p-2 rounded text-sm font-bold" style={{background:"#ffd9d2",border:"3px solid #b3261e",color:"#7a1410"}}>🔧 พี่ขอแก้: {x.fixNote}</div>}
+              {open===x.id && <div className="mt-2 p-2 rounded border-2 border-dashed text-sm whitespace-pre-wrap break-words">{x.brief||"(ไม่มีรายละเอียด)"}</div>}
+              <div className="flex flex-wrap gap-2 mt-3">
+                <button className="btn bg-white text-black" onClick={()=>setOpen(open===x.id?null:x.id)}>{open===x.id?"ซ่อนบรีฟ":"อ่านบรีฟ"}</button>
+                {x.status==="todo" && <button className="btn bg-orange-300 text-black" onClick={()=>update(s=>{s.interns[me].quests.find(z=>z.id===x.id).status="doing";})}>🔥 กำลังลุยไฟ</button>}
+                <ChatBtn x={x} role="intern" onClick={()=>setChat(x.id)}/>
+                <button disabled={x.status==="review"} className="btn bg-green-400 text-black" onClick={()=>{setLink("");setSub(x);}}>✅ ส่งมอบงาน</button>
+              </div>
+            </div>))}
+        </div>
+      ) : (
+        <div className="mt-4">
+          <div className="flex flex-wrap gap-2">{Object.entries(CATS).map(([k,v])=><button key={k} onClick={()=>setCat(k)} className={`btn text-sm text-black ${cat===k?"bg-pink-300":"bg-white"}`}>{v}</button>)}</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+            {ITEMS.filter(i=>i.cat===cat).map(it=>{const own=d.owned.includes(it.id),on=d.equip[it.cat]===it.id;return (
+              <div key={it.id} className="px p-3 text-center">
+                <div className="flex justify-center h-[72px] items-center">
+                  {it.cat==="outfit"||it.cat==="frame" ? <div className="w-14 h-14 rounded-full border-4 border-[var(--line)]" style={{background:it.c==="rainbow"?"linear-gradient(135deg,#f43f5e,#facc15,#22c55e,#6366f1)":it.c}}>{it.e||""}</div> : <span className="text-5xl">{it.e}</span>}
+                </div>
+                <div className="font-bold text-sm">{it.name}</div>
+                <div className="text-xs mb-2">{it.price?`🪙 ${it.price}`:"ฟรี"}</div>
+                {own ? <button className={`btn text-sm w-full text-black ${on?"bg-gray-300":"bg-green-300"}`} onClick={()=>toggle(it)}>{on?(it.cat==="outfit"?"ใส่อยู่":"ถอด"):"สวมใส่"}</button>
+                     : <button className="btn text-sm w-full bg-yellow-300 text-black" disabled={d.coins<it.price} onClick={()=>{buy(it);sfx("coin");}}>ซื้อ</button>}
+              </div>);})}
+          </div>
+        </div>
+      )}
+      {chat&&<ChatModal iname={me} qid={chat} data={data} me={me} role="intern" update={update} onClose={()=>setChat(null)}/>}
+      {sub && <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-40" onClick={()=>setSub(null)}><div className="px p-5 w-full max-w-md" onClick={e=>e.stopPropagation()}>
+        <h3 className="font-black">📦 ส่งมอบ: {sub.title}</h3>
+        <label className="text-sm font-bold block mt-3">ลิงก์ผลงาน (Drive / Canva ฯลฯ)</label>
+        <input className="w-full border-2 rounded p-2 text-black" placeholder="https://..." value={link} onChange={e=>setLink(e.target.value)}/>
+        <label className="text-sm font-bold block mt-3">หมายเหตุถึงพี่</label>
+        <textarea rows="3" className="w-full border-2 rounded p-2 text-black" placeholder="เช่น เสร็จแล้วครับ ทำไว้ 2 แบบให้เลือกครับ" value={note} onChange={e=>setNote(e.target.value)}/>
+        <div className="flex gap-2 mt-4 justify-end"><button className="btn bg-white text-black" onClick={()=>setSub(null)}>ยกเลิก</button><button className="btn bg-green-400 text-black" onClick={()=>finish(sub,link)}>ส่งงาน +{sub.coins} 🪙</button></div></div></div>}
+      {toast && <div key={toast.k} className="pop fixed left-1/2 -translate-x-1/2 bottom-1/3 z-50 px px p-4 text-2xl font-black bg-yellow-200 text-black">{toast.n>0?"🪙 +"+toast.n+" เหรียญ! ✨":"⏳ ส่งตรวจแล้ว! รอพี่ตรวจนะ"}</div>}
+    </div>
+  );
+}
+
+function App() {
+  const [data,setData] = useState(()=>{ try{const r=localStorage.getItem(KEY); if(r) return norm(JSON.parse(r));}catch(e){} return norm(seed()); });
+  const [user,setUser] = useState(()=>{ try{const u=JSON.parse(localStorage.getItem(KEY+"-user")); return u&&u.role==="intern"?u:null;}catch(e){return null;} });
+  const [pass,setPass] = useState(false);
+  const [force,setForce] = useState(null);
+  CUR = user;
+  const save = (k,v) => { try{localStorage.setItem(k,JSON.stringify(v));}catch(e){logErr("บันทึกข้อมูลไม่สำเร็จ: "+e.message);} };
+  useEffect(()=>save(KEY,data),[data]);
+  useEffect(()=>{ window.__LOG=(t,w,x)=>update(s=>{pushAct(s,t,w,x);}); update(s=>{s.visits=(s.visits||0)+1;}); },[]);
+  const update = fn => setData(prev=>{const n=JSON.parse(JSON.stringify(prev)); fn(n); if(n.roster) INTERNS.splice(0,INTERNS.length,...n.roster); try{diffActs(prev,n);}catch(e){logErr("diffActs: "+e.message);} return n;});
+  const login = u => { CUR=u; update(s=>{pushAct(s,"login",u.name,`${u.name} ล็อกอินเข้าสู่ระบบ`);}); setForce(null); setUser(u); save(KEY+"-user",u); };
+  const logout = () => { setUser(null); try{localStorage.removeItem(KEY+"-user");}catch(e){} };
+  return (
+    <div>
+      {pass && <PassModal onOk={()=>{setPass(false);logout();setForce("senior");}} onClose={()=>setPass(false)}/>}
+      <SoundBtn/>
+      <div className="text-center pt-4 px-3"><div className="banner"><span className="text-3xl">⚔️</span> <span className="ptitle">INTERN QUEST</span> <span className="text-3xl">🛡️</span><div className="guild">กิลด์เควสเด็กฝึกงาน · Guild</div></div></div>
+      {user && (
+        <div className="px mx-4 mt-3 p-3 flex justify-between items-center">
+          <b>{user.role==="senior"?"🧙‍♂️":"🧑‍🎓"} {user.name}</b>
+          <div className="flex gap-2">{user.role==="intern" && <button className="btn bg-purple-400 text-black text-sm" onClick={()=>setPass(true)}>🔐 สลับไปฝั่งพี่</button>}<button className="btn bg-white text-black text-sm" onClick={logout}>🔄 สลับตัวละคร (Logout)</button></div>
+        </div>)}
+      {!user||(user.role==="intern"&&!data.interns[user.name]) ? <Login onLogin={login} initRole={force}/> : user.role==="senior" ? <SeniorView me={user.name} data={data} update={update} replace={d=>setData(norm(d))}/> : <InternView me={user.name} data={data} update={update}/>}
+      <div className="text-center text-xs opacity-50 my-6">ข้อมูลเก็บใน LocalStorage ของเบราว์เซอร์นี้ · <button className="underline" onClick={()=>{if(confirm("รีเซ็ตข้อมูลทั้งหมด?")){setData(norm(seed()));}}}>รีเซ็ตข้อมูลตัวอย่าง</button></div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
